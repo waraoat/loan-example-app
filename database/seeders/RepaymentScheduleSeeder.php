@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class LoanSeeder extends Seeder
+class RepaymentScheduleSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +13,6 @@ class LoanSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\Loan::factory(1)->create();
+        // \App\Models\RepaymentSchedule::factory(1)->create();
     }
 }
