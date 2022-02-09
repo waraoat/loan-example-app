@@ -2,85 +2,70 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreLoanRequest;
-use App\Http\Requests\UpdateLoanRequest;
+use App\Models\RepaymentSchedule;
 use App\Models\Loan;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class LoanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        $loans = Loan::all();
+
+        return view('loan.index', compact('loans'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        //
+        return view('loan.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreLoanRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreLoanRequest $request)
+    public function store(Request $request)
     {
-        //
+        Loan::create(
+            [
+              'loan_amount' => $request->loan_amount,
+              'loan_term' => $request->loan_term,
+              'interest_rate' => $request->interest_rate,
+              'created_at' => Carbon::create($request->year, $request->month, 1, 00, 00, 00, 'UTC'),
+            ]
+          );
+
+        return redirect(route('get.loan.index'))->with('message', 'Create loan successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Loan  $loan
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Loan $loan)
+    public function show(Request $request)
     {
-        //
+        $loan = Loan::find($request->id);
+
+        return view('loan.detail', compact('loan'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Loan  $loan
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Loan $loan)
+    public function edit(Request $request)
     {
-        //
+        $loan = Loan::find($request->id);
+
+        return view('loan.edit', compact('loan'));
+      }
+
+    public function update(Request $request)
+    {
+        $loan = Loan::find($request->id);
+        $loan->loan_amount = $request->loan_amount;
+        $loan->loan_term = $request->loan_term;
+        $loan->interest_rate = $request->interest_rate;
+        $loan->created_at = Carbon::create($request->year, $request->month, 1, 00, 00, 00, 'UTC');
+        $loan->save();
+
+        return redirect(route('get.loan.index'))->with('message', 'Update loan successfully!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateLoanRequest  $request
-     * @param  \App\Models\Loan  $loan
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateLoanRequest $request, Loan $loan)
+    public function destroy(Request $request)
     {
-        //
-    }
+        $loan = Loan::find($request->id);
+        $loan->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Loan  $loan
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Loan $loan)
-    {
-        //
+        return redirect(route('get.loan.index'))->with('message', 'Delete loan successfully!');
     }
 }

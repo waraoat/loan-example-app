@@ -15,7 +15,7 @@ class CreateRepaymentSchedulesTable extends Migration
     {
         Schema::create('repayment_schedules', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->foreignId('loan_id')->constrained()->onDelete('restrict');
+            $table->foreignId('loan_id')->references('id')->on('loans')->onDelete('cascade');
             $table->unsignedInteger('payment_no');
             $table->date('date');
             $table->decimal('payment_amount', $precision = 21, $scale = 6);

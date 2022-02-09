@@ -9,8 +9,12 @@ class Loan extends Model
 {
     use HasFactory;
 
-    public function repayment_schedule()
+    protected $fillable = [
+        'loan_amount', 'loan_term', 'interest_rate', 'created_at'
+    ];
+
+    public function repayment_schedules()
     {
-        return $this->hasMany('App\Models\RepaymentSchedules', 'loan_id', 'id');
+        return $this->hasMany('App\Models\RepaymentSchedule', 'loan_id', 'id');
     }
 }
