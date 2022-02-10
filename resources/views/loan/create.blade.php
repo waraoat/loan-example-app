@@ -4,6 +4,15 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6">
+            @if(session()->has('message'))
+                <div class="alert alert-success">
+                    {{ session()->get('message') }}
+                </div>
+            @elseif(session()->has('error'))
+                <div class="alert alert-danger">
+                    {{ session()->get('error') }}
+                </div>
+            @endif
             <div class="card">
                 <div class="card-header">Create</div>
 
@@ -20,7 +29,7 @@
                         <div class="col-md-12">
                         <div class="row">
                         </div>
-                          <form action="{{route('post.loan')}}" method="post">
+                          <form action="{{route('loan.store')}}" method="post">
                             @csrf
                             <div class="form-group">
                                 <label>Loan Amount</label>
@@ -87,7 +96,7 @@
                             </div>
 
                             <button type="submit" class="btn btn-primary">Create</button>
-                            <a href="{{route('get.loan.index')}}"><input type="button" class="btn btn-danger" value="Cancel"></a>
+                            <a href="{{route('loan.index')}}"><input type="button" class="btn btn-danger" value="Cancel"></a>
                           </form>
                         </div>
                     </div>
@@ -100,7 +109,7 @@
     <br>
     <div class="row justify-content-center">
       <div class="col-md-6">
-        <a class="btn btn-primary" href="{{route('get.loan.index')}}"><< Back</a>
+        <a class="btn btn-primary" href="{{route('loan.index')}}"><< Back</a>
       </div>
     </div>
 </div>

@@ -2,17 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RepaymentSchedule;
-use App\Models\Loan;
+use App\Http\Services\LoanService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use InvalidArgumentException;
 
 class LoanController extends Controller
 {
+    protected $loanService;
+
+    public function __construct(LoanService $loanService)
+    {
+        $this->loanService = $loanService;
+    }
+
     public function index()
     {
-        $loans = Loan::all();
-
+        $loans = $this->loanService->getAll();
         return view('loan.index', compact('loans'));
     }
 
@@ -23,49 +29,71 @@ class LoanController extends Controller
 
     public function store(Request $request)
     {
-        Loan::create(
-            [
-              'loan_amount' => $request->loan_amount,
-              'loan_term' => $request->loan_term,
-              'interest_rate' => $request->interest_rate,
-              'created_at' => Carbon::create($request->year, $request->month, 1, 00, 00, 00, 'UTC'),
-            ]
-          );
+        $data = $request->only([
+            'loan_amount',
+            'loan_term',
+            'interest_rate',
+            'month',
+            'year'
+        ]);
 
-        return redirect(route('get.loan.index'))->with('message', 'Create loan successfully!');
+        try {
+            $this->loanService->saveLoanData($data);
+            return redirect(route('loan.index'))->with('message', 'Create loan successfully!');
+        } catch (InvalidArgumentException $e) {
+            return redirect(route('loan.create'))->with('error', $e->getMessage());
+        } catch (Exception $e) {
+            return redirect(route('loan.index'))->with('error', $e->getMessage());
+        } 
     }
 
-    public function show(Request $request)
+    public function show($id)
     {
-        $loan = Loan::find($request->id);
-
-        return view('loan.detail', compact('loan'));
+        try {
+            $loan = $this->loanService->getById($id);
+            return view('loan.detail', compact('loan'));
+        } catch (Exception $e) {
+            return redirect(route('loan.index'))->with('error', $e->getMessage());
+        } 
     }
 
-    public function edit(Request $request)
+    public function edit($id)
     {
-        $loan = Loan::find($request->id);
-
-        return view('loan.edit', compact('loan'));
+        try {
+            $loan = $this->loanService->getById($id);
+            return view('loan.edit', compact('loan'));
+        } catch (Exception $e) {
+            return redirect(route('loan.index'))->with('error', $e->getMessage());
+        } 
       }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-        $loan = Loan::find($request->id);
-        $loan->loan_amount = $request->loan_amount;
-        $loan->loan_term = $request->loan_term;
-        $loan->interest_rate = $request->interest_rate;
-        $loan->created_at = Carbon::create($request->year, $request->month, 1, 00, 00, 00, 'UTC');
-        $loan->save();
+        $data = $request->only([
+            'loan_amount',
+            'loan_term',
+            'interest_rate',
+            'month',
+            'year'
+        ]);
 
-        return redirect(route('get.loan.index'))->with('message', 'Update loan successfully!');
+        try {
+            $this->loanService->updateLoan($data, $id);
+            return redirect(route('loan.index'))->with('message', 'Update loan successfully!');
+        } catch (InvalidArgumentException $e) {
+            return redirect(route('loan.edit', $id))->with('error', $e->getMessage());
+        } catch (Exception $e) {
+            return redirect(route('loan.index'))->with('error', $e->getMessage());
+        }
     }
 
-    public function destroy(Request $request)
+    public function destroy($id)
     {
-        $loan = Loan::find($request->id);
-        $loan->delete();
-
-        return redirect(route('get.loan.index'))->with('message', 'Delete loan successfully!');
+        try {
+            $this->loanService->deleteById($id);
+            return redirect(route('loan.index'))->with('message', 'Delete loan successfully!');
+        } catch (Exception $e) {
+            return redirect(route('loan.index'))->with('error', $e->getMessage());
+        }
     }
 }

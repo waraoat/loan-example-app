@@ -8,6 +8,10 @@
                 <div class="alert alert-success">
                     {{ session()->get('message') }}
                 </div>
+            @elseif(session()->has('error'))
+                <div class="alert alert-danger">
+                    {{ session()->get('error') }}
+                </div>
             @endif
             <div class="card">
                 <div class="card-header">
@@ -20,7 +24,7 @@
 
                 <div class="card-body">  
                     <div class="card-body" style="padding-left: 0rem;">
-                        <a href="{{route('get.loan.create')}}">
+                        <a href="{{route('loan.create')}}">
                             <button type="button" class="btn btn-primary">Add New Loan</button>
                         </a>      
                     </div>
@@ -44,13 +48,13 @@
                             <td>{{$loan->interest_rate}} %</td>
                             <td>{{$loan->created_at}}</td>
                             <td>
-                                <a href="{{route('get.loan.show',$loan->id)}}">
+                                <a href="{{route('loan.show',$loan->id)}}">
                                     <input type="button" class="btn btn-primary" value='View'>
                                 </a>
-                                <a href="{{route('get.loan.edit',$loan->id)}}">
+                                <a href="{{route('loan.edit',$loan->id)}}">
                                     <input type="button" class="btn btn-success" value='Edit'>
                                 </a>
-                                <form action="{{route('delete.loan', $loan->id)}}" method="post" style="display: inline">
+                                <form action="{{route('loan.destroy', $loan->id)}}" method="post" style="display: inline">
                                 <input type="hidden" name="_method" value="DELETE">
                                     @csrf
                                     <button type="submit" class="btn btn-danger" onclick="return confirm('Are you srure to delete loan id: {{$loan->id}}?')">

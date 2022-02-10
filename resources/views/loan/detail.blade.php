@@ -88,7 +88,7 @@
         </div>
     </div>
     <br>
-    <a class="btn btn-primary" href="{{route('get.loan.index')}}"><< Back</a>
+    <a class="btn btn-primary" href="{{route('loan.index')}}"><< Back</a>
 </div>
 
 @endsection
