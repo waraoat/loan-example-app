@@ -42,7 +42,6 @@ class LoanRepository
 
     public function update($data, $id)
     {
-        
         $loan = $this->loan->find($id);
 
         $loan->loan_amount = $data['loan_amount'];
@@ -57,7 +56,6 @@ class LoanRepository
 
     public function delete($id)
     {
-        
         $loan = $this->loan->find($id);
         $loan->delete();
 

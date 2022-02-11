@@ -76,8 +76,9 @@
                             <th scope="row">{{ ++$index }}</th>
                             <td>{{$repayment_schedule->payment_no}}</td>
                             <td>{{$repayment_schedule->date}}</td>
-                            <td>{{$repayment_schedule->payment_amount}} %</td>
+                            <td>{{$repayment_schedule->payment_amount}}</td>
                             <td>{{$repayment_schedule->principal}}</td>
+                            <td>{{$repayment_schedule->interest}}</td>
                             <td>{{$repayment_schedule->balance}}</td>
                             </tr>
                             @endforeach
