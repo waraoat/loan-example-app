@@ -2,10 +2,12 @@
 
 namespace App\Http\Services;
 
-use App\Library\RepaymentScheduleGenerator;
-use App\Models\Post;
+use App\Http\Helpers\RepaymentScheduleHelper;
 use App\Http\Repositories\LoanRepository;
 use App\Http\Repositories\RepaymentScheduleRepository;
+use App\Library\RepaymentScheduleGenerator;
+use App\Models\Loan;
+use App\Models\Post;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -25,15 +27,9 @@ class LoanService
 
     public function deleteById($id)
     {
-        DB::beginTransaction();
-        try {
-            $loan = $this->loanRepository->delete($id);
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException('Unable to delete loan');
-        }
-        DB::commit();
+        $loan = DB::transaction(function () use($id) {
+            return $this->loanRepository->delete($id);
+        });
 
         return $loan;
     }
@@ -61,16 +57,14 @@ class LoanService
             throw new InvalidArgumentException($validator->errors()->first());
         }
 
-        DB::beginTransaction();
-        try {
-            $data['created_at'] = Carbon::create($data['year'], $data['month'], 1, 00, 00, 00, 'UTC');
+        $data['created_at'] = Carbon::create($data['year'], $data['month'], 1, 00, 00, 00, 'UTC');
+
+        $loan = DB::transaction(function () use($data, $id) {
             $loan = $this->loanRepository->update($data, $id);
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::info($e->getMessage());
-            throw new InvalidArgumentException('Unable to update loan data');
-        }
-        DB::commit();
+            $this->repaymentScheduleRepository->deleteByLoanID($loan->id);
+            $this->createRepaymentSchedules($loan);
+            return $loan;
+        });
 
         return $loan;
 
@@ -90,14 +84,42 @@ class LoanService
         }
 
         $data['created_at'] = Carbon::create($data['year'], $data['month'], 1, 00, 00, 00, 'UTC');
-        $loan = $this->loanRepository->save($data);
 
-        $data['loan_id'] = $loan->id;
-
-        $repaymentScheduleGenerator = new RepaymentScheduleGenerator($data);
-        $repaymentScheduleData = $repaymentScheduleGenerator->getRepaymentScheduleData();
-        $repaymentSchedules = $this->repaymentScheduleRepository->insert($repaymentScheduleData);
+        
+        $loan = DB::transaction(function () use($data) {
+            $loan = $this->loanRepository->save($data);
+            $this->createRepaymentSchedules($loan);
+            return $loan;
+        });
 
         return $loan;
+    }
+
+    private function createRepaymentSchedules(Loan $loan)
+    {
+        $repayment_schedules = [];
+        $total_month = $loan->loan_term * 12;
+        $outstanding_balance = $loan->loan_amount;
+        $pmt = RepaymentScheduleHelper::calculatePMT($loan->loan_amount, $loan->interest_rate, $loan->loan_term);
+
+        for ($index = 1; $index <= $total_month; $index++) {
+            $interest = RepaymentScheduleHelper::calculateInterest($loan->interest_rate, $outstanding_balance);
+            $principal = RepaymentScheduleHelper::calculatePrincipal($pmt, $interest);
+            $outstanding_balance = $outstanding_balance - $principal;
+
+            $repayment_schedule = [
+                'loan_id' => $loan->id,
+                'payment_no' => $index,
+                'date' => $loan->created_at->copy()->addMonthsNoOverflow($index-1),
+                'payment_amount' => $pmt,
+                'principal' => $principal,
+                'interest' => $interest,
+                'balance' => $outstanding_balance,
+            ];
+
+            array_push($repayment_schedules, $repayment_schedule);
+        }
+
+        return $this->repaymentScheduleRepository->insert($repayment_schedules);
     }
 }

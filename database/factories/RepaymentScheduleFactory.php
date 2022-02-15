@@ -14,9 +14,6 @@ class RepaymentScheduleFactory extends Factory
     public function definition()
     {
         return [
-            'loan_id' => function () {
-                return \App\Models\Loan::factory()->create()->id;
-            },
             'payment_no' => $this->faker->numberBetween(1, 100),
             'date' => $this->faker->dateTime(),
             'payment_amount' => $this->faker->randomFloat(6),
