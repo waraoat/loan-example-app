@@ -69,7 +69,7 @@ class LoanControllerTest extends TestCase
             'loan_amount' => 10000,
             'loan_term' => 5,
             'interest_rate' => 10,
-            'created_at' => '2021-01-01 00:00:00',
+            'started_at' => '2021-01-01 00:00:00',
         ]);
     }
     // test_store_when_xxx_return_xxx()
@@ -92,7 +92,7 @@ class LoanControllerTest extends TestCase
             'loan_amount' => 10000,
             'loan_term' => 6,
             'interest_rate' => 10,
-            'created_at' => '2021-02-01 00:00:00',
+            'started_at' => '2021-02-01 00:00:00',
         ]);
     }
 
@@ -107,7 +107,7 @@ class LoanControllerTest extends TestCase
             'loan_amount' => $loan->loan_amount,
             'loan_term' => $loan->loan_term,
             'interest_rate' => $loan->interest_rate,
-            'created_at' => $loan->crerated_at,
+            'started_at' => $loan->crerated_at,
         ]);
     }
 }

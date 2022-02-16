@@ -33,7 +33,7 @@ class LoanRepository
         $loan->loan_amount = $data['loan_amount'];
         $loan->loan_term = $data['loan_term'];
         $loan->interest_rate = $data['interest_rate'];
-        $loan->created_at = $data['created_at'];
+        $loan->started_at = $data['started_at'];
 
         $loan->save();
 
@@ -47,7 +47,7 @@ class LoanRepository
         $loan->loan_amount = $data['loan_amount'];
         $loan->loan_term = $data['loan_term'];
         $loan->interest_rate = $data['interest_rate'];
-        $loan->created_at = $data['created_at'];
+        $loan->started_at = $data['started_at'];
 
         $loan->update();
 

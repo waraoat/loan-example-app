@@ -41,8 +41,7 @@ class LoanServiceTest extends TestCase
             'loan_amount' => 10000,
             'loan_term' => 1,
             'interest_rate' => 10,
-            'month' => 1,
-            'year' => 2021
+            'started_at' => '2021-01-01 00:00:00'
         ];
 
         $updated_loan = $this->loanService->updateLoan($data, $loan->id);
@@ -50,7 +49,7 @@ class LoanServiceTest extends TestCase
         $this->assertEquals($data['loan_amount'], $updated_loan->loan_amount);
         $this->assertEquals($data['loan_term'], $updated_loan->loan_term);
         $this->assertEquals($data['interest_rate'], $updated_loan->interest_rate);
-        $this->assertEquals('2021-01-01 00:00:00', $updated_loan->created_at);
+        $this->assertEquals('2021-01-01 00:00:00', $updated_loan->started_at);
         $this->assertEquals(12, count($updated_loan->repayment_schedules));
     }
 
@@ -60,8 +59,7 @@ class LoanServiceTest extends TestCase
             'loan_amount' => 10000,
             'loan_term' => 1,
             'interest_rate' => 10,
-            'month' => 1,
-            'year' => 2021
+            'started_at' => '2021-01-01 00:00:00'
         ];
 
         $loan = $this->loanService->saveLoanData($data);
@@ -69,6 +67,7 @@ class LoanServiceTest extends TestCase
         $this->assertEquals($data['loan_amount'], $loan->loan_amount);
         $this->assertEquals($data['loan_term'], $loan->loan_term);
         $this->assertEquals($data['interest_rate'], $loan->interest_rate);
-        $this->assertEquals('2021-01-01 00:00:00', $loan->created_at);
+        $this->assertEquals('2021-01-01 00:00:00', $loan->started_at);
+        $this->assertEquals(12, count($loan->repayment_schedules));
     }
 }

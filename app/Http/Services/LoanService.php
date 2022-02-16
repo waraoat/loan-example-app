@@ -46,19 +46,6 @@ class LoanService
 
     public function updateLoan($data, $id)
     {
-        $validator = Validator::make($data, [
-            'loan_amount' => ['required', 'numeric', 'min:1000', 'max:100000000'],
-            'loan_term' => ['required', 'numeric', 'min:1', 'max:50'],
-            'interest_rate' => ['required', 'numeric', 'min:1', 'max:36'],
-            'month' => ['required', 'numeric', 'min:1', 'max:12'],
-            'year' => ['required', 'numeric', 'min:2017', 'max:2050']
-        ]);
-        if ($validator->fails()) {
-            throw new InvalidArgumentException($validator->errors()->first());
-        }
-
-        $data['created_at'] = Carbon::create($data['year'], $data['month'], 1, 00, 00, 00, 'UTC');
-
         $loan = DB::transaction(function () use($data, $id) {
             $loan = $this->loanRepository->update($data, $id);
             $this->repaymentScheduleRepository->deleteByLoanID($loan->id);
@@ -67,25 +54,10 @@ class LoanService
         });
 
         return $loan;
-
     }
 
     public function saveLoanData($data)
     {
-        $validator = Validator::make($data, [
-            'loan_amount' => ['required', 'numeric', 'min:1000', 'max:100000000'],
-            'loan_term' => ['required', 'numeric', 'min:1', 'max:50'],
-            'interest_rate' => ['required', 'numeric', 'min:1', 'max:36'],
-            'month' => ['required', 'numeric', 'min:1', 'max:12'],
-            'year' => ['required', 'numeric', 'min:2017', 'max:2050']
-        ]);
-        if ($validator->fails()) {
-            throw new InvalidArgumentException($validator->errors()->first());
-        }
-
-        $data['created_at'] = Carbon::create($data['year'], $data['month'], 1, 00, 00, 00, 'UTC');
-
-        
         $loan = DB::transaction(function () use($data) {
             $loan = $this->loanRepository->save($data);
             $this->createRepaymentSchedules($loan);
@@ -110,7 +82,7 @@ class LoanService
             $repayment_schedule = [
                 'loan_id' => $loan->id,
                 'payment_no' => $index,
-                'date' => $loan->created_at->copy()->addMonthsNoOverflow($index-1),
+                'date' => $loan->started_at->copy()->addMonthsNoOverflow($index-1),
                 'payment_amount' => $pmt,
                 'principal' => $principal,
                 'interest' => $interest,

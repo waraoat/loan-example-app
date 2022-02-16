@@ -10,8 +10,10 @@ class Loan extends Model
     use HasFactory;
 
     protected $fillable = [
-        'loan_amount', 'loan_term', 'interest_rate', 'created_at'
+        'loan_amount', 'loan_term', 'interest_rate', 'started_at'
     ];
+
+    protected $dates = ['started_at'];
 
     public function repayment_schedules()
     {
