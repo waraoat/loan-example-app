@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Repositories;
+namespace App\Repositories;
 
 use App\Models\Loan;
 use Carbon\Carbon;
@@ -23,7 +23,7 @@ class LoanRepository
     public function getById($id)
     {
         return $this->loan
-            ->find($id);
+            ->findOrFail($id);
     }
 
     public function save($data)
@@ -42,7 +42,7 @@ class LoanRepository
 
     public function update($data, $id)
     {
-        $loan = $this->loan->find($id);
+        $loan = $this->loan->findOrFail($id);
 
         $loan->loan_amount = $data['loan_amount'];
         $loan->loan_term = $data['loan_term'];
@@ -56,7 +56,7 @@ class LoanRepository
 
     public function delete($id)
     {
-        $loan = $this->loan->find($id);
+        $loan = $this->loan->findOrFail($id);
         $loan->delete();
 
         return $loan;
