@@ -4,71 +4,146 @@ namespace Tests\Unit\Services;
 
 use App\Models\Loan;
 use App\Models\RepaymentSchedule;
-use App\Http\Services\LoanService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
+use App\Services\LoanService;
+use App\Repositories\LoanRepository;
+use App\Repositories\RepaymentScheduleRepository;
 use Tests\TestCase;
+use Mockery;
 
 class LoanServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function setUp(): void
     {
         parent::setUp();
-        $this->loanService = $this->app->make(LoanService::class);
+        $this->loanRepository = Mockery::mock(LoanRepository::class);
+        $this->repaymentScheduleRepository = Mockery::mock(RepaymentScheduleRepository::class);
+        $this->loanService = new LoanService($this->loanRepository, $this->repaymentScheduleRepository);
     }
 
-    public function testDeleteById()
+    public function test_delete_by_id()
     {
-        $loan = Loan::factory()->create();
-        $repayment_schedules = RepaymentSchedule::factory(5)->create([
-            'loan_id' => $loan->id,
+        $loan = Loan::factory()->make([
+            'id' => 1,
+            'loan_amount' => 10000,
+            'loan_term' => 1,
+            'interest_rate' => 10,
+            'started_at' => '2021-01-01 00:00:00',
         ]);
 
-        $this->loanService->deleteById($loan->id);
-        $this->assertEquals(count($loan->repayment_schedules), 0);
+        $this->repaymentScheduleRepository->shouldReceive('deleteByLoanId')->once();
+        $this->loanRepository->shouldReceive('delete')->once()->andReturn($loan);
+
+        $deleated_loan = $this->loanService->deleteById($loan->id);
+
+        $this->assertEquals(10000, $deleated_loan->loan_amount);
+        $this->assertEquals(1, $deleated_loan->loan_term);
+        $this->assertEquals(10, $deleated_loan->interest_rate);
+        $this->assertEquals('2021-01-01 00:00:00', $deleated_loan->started_at);
     }
 
-    public function testUpdateLoan()
+    public function test_get_all()
     {
-        $loan = Loan::factory()->create();
-        $repayment_schedules = RepaymentSchedule::factory(5)->create([
-            'loan_id' => $loan->id,
+        $loan_1 = Loan::factory()->make([
+            'loan_amount' => 10000,
+            'loan_term' => 1,
+            'interest_rate' => 10,
+            'started_at' => '2021-01-01 00:00:00',
+        ]);
+        $loan_2 =  Loan::factory()->make([
+            'loan_amount' => 20000,
+            'loan_term' => 2,
+            'interest_rate' => 20,
+            'started_at' => '2021-02-01 00:00:00',
+        ]);
+
+        $this->loanRepository->shouldReceive('getAll')->once()->andReturn([$loan_1, $loan_2]);
+
+        $loans = $this->loanService->getAll();
+
+        $this->assertEquals(10000, $loans[0]->loan_amount);
+        $this->assertEquals(1, $loans[0]->loan_term);
+        $this->assertEquals(10, $loans[0]->interest_rate);
+        $this->assertEquals('2021-01-01 00:00:00', $loans[0]->started_at);
+        $this->assertEquals(20000, $loans[1]->loan_amount, 20000);
+        $this->assertEquals(2, $loans[1]->loan_term);
+        $this->assertEquals(20, $loans[1]->interest_rate);
+        $this->assertEquals('2021-02-01 00:00:00', $loans[1]->started_at);
+    }
+
+    public function test_get_by_id()
+    {
+        $loan = Loan::factory()->make([
+            'id' => 1,
+            'loan_amount' => 10000,
+            'loan_term' => 1,
+            'interest_rate' => 10,
+            'started_at' => '2021-01-01 00:00:00',
+        ]);
+
+        $this->loanRepository->shouldReceive('getById')->once()->andReturn($loan);
+
+        $response = $this->loanService->getById($loan->id);
+
+        $this->assertEquals(10000, $response->loan_amount);
+        $this->assertEquals(1, $response->loan_term);
+        $this->assertEquals(10, $response->interest_rate);
+        $this->assertEquals('2021-01-01 00:00:00', $response->started_at);
+    }
+
+    public function test_update_loan()
+    {
+        $loan = Loan::factory()->make([
+            'id' => 1,
+            'loan_amount' => 10000,
+            'loan_term' => 1,
+            'interest_rate' => 10,
+            'started_at' => '2021-01-01 00:00:00',
         ]);
 
         $data = [
             'loan_amount' => 10000,
             'loan_term' => 1,
             'interest_rate' => 10,
-            'month' => 1,
-            'year' => 2021
+            'started_at' => '2021-01-01 00:00:00'
         ];
+
+        $this->loanRepository->shouldReceive('update')->once()->andReturn($loan);
+        $this->repaymentScheduleRepository->shouldReceive('deleteByLoanId')->once();
+        $this->repaymentScheduleRepository->shouldReceive('insert')->once();
 
         $updated_loan = $this->loanService->updateLoan($data, $loan->id);
         
-        $this->assertEquals($data['loan_amount'], $updated_loan->loan_amount);
-        $this->assertEquals($data['loan_term'], $updated_loan->loan_term);
-        $this->assertEquals($data['interest_rate'], $updated_loan->interest_rate);
-        $this->assertEquals('2021-01-01 00:00:00', $updated_loan->created_at);
-        $this->assertEquals(12, count($updated_loan->repayment_schedules));
+        $this->assertEquals(10000, $updated_loan->loan_amount);
+        $this->assertEquals(1, $updated_loan->loan_term);
+        $this->assertEquals(10, $updated_loan->interest_rate);
+        $this->assertEquals('2021-01-01 00:00:00', $updated_loan->started_at);
     }
 
-    public function testSaveLoanData()
+    public function test_save_loan_data()
     {
         $data = [
             'loan_amount' => 10000,
             'loan_term' => 1,
             'interest_rate' => 10,
-            'month' => 1,
-            'year' => 2021
+            'started_at' => '2021-01-01 00:00:00'
         ];
+
+        $this->loanRepository->shouldReceive('save')->once()->andReturn(
+            Loan::factory()->make([
+                'id' => 1,
+                'loan_amount' => 10000,
+                'loan_term' => 1,
+                'interest_rate' => 10,
+                'started_at' => '2021-01-01 00:00:00',
+            ])
+        );
+        $this->repaymentScheduleRepository->shouldReceive('insert')->once();
 
         $loan = $this->loanService->saveLoanData($data);
 
-        $this->assertEquals($data['loan_amount'], $loan->loan_amount);
-        $this->assertEquals($data['loan_term'], $loan->loan_term);
-        $this->assertEquals($data['interest_rate'], $loan->interest_rate);
-        $this->assertEquals('2021-01-01 00:00:00', $loan->created_at);
+        $this->assertEquals(10000, $loan->loan_amount);
+        $this->assertEquals(1, $loan->loan_term);
+        $this->assertEquals(10, $loan->interest_rate);
+        $this->assertEquals('2021-01-01 00:00:00', $loan->started_at);
     }
 }
