@@ -8,9 +8,13 @@
                 <div class="alert alert-success">
                     {{ session()->get('message') }}
                 </div>
-            @elseif(session()->has('error'))
+            @elseif ($errors->any())
                 <div class="alert alert-danger">
-                    {{ session()->get('error') }}
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
             <div class="card">

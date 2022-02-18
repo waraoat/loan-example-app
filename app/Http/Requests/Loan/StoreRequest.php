@@ -8,11 +8,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
 { 
-    public function failedValidation(Validator $validator)
-    {
-        return redirect()->back()->with('error', $validator->messages()->first());
-    }
-
     /**
      * Prepare the data for validation.
      *

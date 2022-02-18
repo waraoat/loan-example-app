@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Loan\StoreRequest;
 use App\Http\Requests\Loan\UpdateRequest;
-use App\Http\Services\LoanService;
+use App\Services\LoanService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use InvalidArgumentException;
@@ -31,7 +31,7 @@ class LoanController extends Controller
 
     public function store(StoreRequest $request)
     {
-        $validator = $request->validated();
+        $request->validated();
 
         $data = $request->only([
             'loan_amount',
@@ -70,7 +70,7 @@ class LoanController extends Controller
 
     public function update(UpdateRequest $request, $id)
     {
-        $validator = $request->validated();
+        $request->validated();
 
         $data = $request->only([
             'loan_amount',
