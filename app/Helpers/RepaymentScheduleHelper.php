@@ -5,21 +5,22 @@ namespace App\Helpers;
 class RepaymentScheduleHelper
 
 {
-    public static function generateRepaymentSchedules($data)
+    
+    public static function generateRepaymentSchedules(float $amount, int $term_years, float $interest_rate, $started_at)
     {
         $repayment_schedules = [];
-        $total_month = $data->loan_term * 12;
-        $outstanding_balance = $data->loan_amount;
-        $pmt = self::calculatePMT($data->loan_amount, $data->interest_rate, $data->loan_term);
+        $total_month = $term_years * 12;
+        $outstanding_balance = $amount;
+        $pmt = self::calculatePMT($amount, $interest_rate, $term_years);
 
         for ($index = 1; $index <= $total_month; $index++) {
-            $interest = self::calculateInterest($data->interest_rate, $outstanding_balance);
+            $interest = self::calculateInterest($interest_rate, $outstanding_balance);
             $principal = self::calculatePrincipal($pmt, $interest);
             $outstanding_balance = $outstanding_balance - $principal;
 
             $repayment_schedule = [
                 'payment_no' => $index,
-                'date' => $data->started_at->copy()->addMonthsNoOverflow($index-1),
+                'date' => $started_at->copy()->addMonthsNoOverflow($index-1),
                 'payment_amount' => $pmt,
                 'principal' => $principal,
                 'interest' => $interest,
