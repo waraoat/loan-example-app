@@ -19,7 +19,7 @@ class RepaymentScheduleRepository
         return $this->repayment_schedule::insert($data);
     }
 
-    public function deleteByLoanID($id)
+    public function deleteByLoanId($id)
     {
         $repayment_schedules = $this->repayment_schedule->where('loan_id', '=', $id);
         $repayment_schedules->delete();

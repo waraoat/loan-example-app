@@ -28,7 +28,7 @@ class LoanService
     public function deleteById($id)
     {
         $loan = DB::transaction(function () use($id) {
-            $this->repaymentScheduleRepository->deleteByLoanID($id);
+            $this->repaymentScheduleRepository->deleteByLoanId($id);
             return $this->loanRepository->delete($id);
         });
 
@@ -49,7 +49,7 @@ class LoanService
     {
         return DB::transaction(function () use($data, $id) {
             $loan = $this->loanRepository->update($data, $id);
-            $this->repaymentScheduleRepository->deleteByLoanID($loan->id);
+            $this->repaymentScheduleRepository->deleteByLoanId($loan->id);
             $repaymentSchedules = RepaymentScheduleHelper::generateRepaymentSchedules($loan->loan_amount, $loan->loan_term, $loan->interest_rate, $loan->started_at);
             foreach ($repaymentSchedules as $key => $value) { $repaymentSchedules[$key]['loan_id'] = $loan->id; }
             $this->repaymentScheduleRepository->insert($repaymentSchedules);
