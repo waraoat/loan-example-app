@@ -23,6 +23,7 @@ class LoanRepository
     public function getById($id)
     {
         return $this->loan
+            ->with('repayment_schedules')
             ->findOrFail($id);
     }
 

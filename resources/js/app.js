@@ -4,6 +4,8 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
+import moment from 'moment';
+
 require('./bootstrap');
 
 window.Vue = require('vue').default;
@@ -18,8 +20,22 @@ window.Vue = require('vue').default;
 
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+Vue.filter('formatDateTime', function(value) {
+    if (value) {
+        return moment(String(value)).format('DD MMM YYYY hh:mm')
+    }
+});
+Vue.filter('formatDate', function(value) {
+    if (value) {
+        return moment(String(value)).format('DD MMM YYYY')
+    }
+});
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('loan-form', require('./components/template/loan-form.vue').default);
+Vue.component('loan-index-page', require('./pages/loan/index.vue').default);
+Vue.component('loan-create-page', require('./pages/loan/create.vue').default);
+Vue.component('loan-edit-page', require('./pages/loan/edit.vue').default);
+Vue.component('loan-show-page', require('./pages/loan/show.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

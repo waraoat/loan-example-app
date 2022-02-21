@@ -1,5 +1,5 @@
 @extends('layouts.app')
 
 @section('content')
-<loan-index-page></loan-index-page>
+<loan-show-page :loan_id={{$id}} ></loan-show-page>
 @endsection

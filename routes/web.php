@@ -17,6 +17,6 @@ Route::get('/', function () {
     return redirect(route('loans.index'))->with('message', 'Welcome!');
 })->name('home');
 
-Route::resource('loans', App\Http\Controllers\LoanController::class);
+Route::resource('loans', App\Http\Controllers\Web\LoanController::class);
 
 
