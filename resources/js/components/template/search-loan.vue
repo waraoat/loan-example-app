@@ -47,6 +47,15 @@
                 </div>
             </div>
 
+            <div class="mb-3" v-if="Object.keys(errors).length != 0">
+                <div class="alert alert-danger">
+                    <li v-for="error in errors">
+                        {{ error[0] }}
+                    </li>
+
+                </div>
+            </div>
+            
             <div class="card-body" style="padding: 1rem 1rem 0rem 0rem;">
                 <button type="button" class="btn btn-secondary" v-on:click="onClick">Search</button>
             </div>
@@ -56,7 +65,7 @@
 
 <script>
     export default {
-        props: ['loans'],
+        props: ['errors'],
         data() {
             return {
                 filter: {
@@ -71,15 +80,7 @@
         },
         methods: {
             onClick() {
-                let filtered_loans = this.loans.filter(loan => {
-                    let amount_in_range = (+loan.loan_amount >= +this.filter.min_loan_amount) && (+loan.loan_amount <= +this.filter.max_loan_amount);
-                    let term_in_range = (+loan.loan_term >= +this.filter.min_loan_term) && (+loan.loan_term <= +this.filter.max_loan_amount);
-                    let interest_rate_in_range = (+loan.interest_rate >= +this.filter.min_interest_rate) && (+loan.interest_rate <= +this.filter.max_interest_rate)
-
-                    return amount_in_range && term_in_range && interest_rate_in_range;
-                })
-
-                this.$emit('clicked', filtered_loans)
+                this.$emit('clicked', this.filter)
             }
         }
     }

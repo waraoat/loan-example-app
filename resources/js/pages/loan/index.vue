@@ -21,9 +21,9 @@
                         </span>        
                     </div>
 
-                    <search-loan @clicked="filterLoan" v-if="is_search" :loans=this.loans></search-loan>
+                    <search-loan @clicked="filterLoan" v-if="is_search" :errors="errors"></search-loan>
                     
-                    <loan-list-table :loans=this.filtered_loans></loan-list-table>
+                    <loan-list-table :loans="loans"></loan-list-table>
                     
                 </div>
             </div>
@@ -37,22 +37,23 @@
     export default {
         data() {
             return {
-                filtered_loans: [],
                 loans: [],
+                errors: {},
                 is_search: false,
             }
         },
         methods: {
-            getLoans() {
-                axios.get('/api/loans').then((response) => {
+            getLoans(params) {
+                axios.get('/api/loans', { params: params }).then((response) => {
                     this.loans = response.data;
-                    this.filtered_loans = response.data;
                 }).catch((error) => {
-                    console.log(error);
+                    if (error.response.status == 422) {
+                        this.errors = error.response.data.errors;
+                    }
                 })
             },
             filterLoan(data) {
-                this.filtered_loans = data;
+                this.getLoans(data)
             },
         },
         mounted() {

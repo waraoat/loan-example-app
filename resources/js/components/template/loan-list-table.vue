@@ -18,10 +18,10 @@
         <td>{{parseFloat(loan.interest_rate).toFixed(2)}} %</td>
         <td>{{loan.created_at | formatDateTime}}</td>
         <td style="white-space: nowrap; width: 0%;">
-            <a v-bind:href="'loans/'+loan.id">
+            <a v-bind:href="`loans/${loan.id}`">
                 <input type="button" class="btn btn-primary" value='View'>
             </a>
-            <a v-bind:href="'loans/'+loan.id+'/edit'">
+            <a v-bind:href="`loans/${loan.id}/edit`">
                 <input type="button" class="btn btn-success" value='Edit'>
             </a>
             <button class="btn btn-danger" v-on:click="deleteLoan(loan.id)">Delete</button>

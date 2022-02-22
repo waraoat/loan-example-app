@@ -5532,8 +5532,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ['loans'],
+  props: ['errors'],
   data: function data() {
     return {
       filter: {
@@ -5548,15 +5557,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     onClick: function onClick() {
-      var _this = this;
-
-      var filtered_loans = this.loans.filter(function (loan) {
-        var amount_in_range = +loan.loan_amount >= +_this.filter.min_loan_amount && +loan.loan_amount <= +_this.filter.max_loan_amount;
-        var term_in_range = +loan.loan_term >= +_this.filter.min_loan_term && +loan.loan_term <= +_this.filter.max_loan_amount;
-        var interest_rate_in_range = +loan.interest_rate >= +_this.filter.min_interest_rate && +loan.interest_rate <= +_this.filter.max_interest_rate;
-        return amount_in_range && term_in_range && interest_rate_in_range;
-      });
-      this.$emit('clicked', filtered_loans);
+      this.$emit('clicked', this.filter);
     }
   }
 });
@@ -5772,24 +5773,27 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
-      filtered_loans: [],
       loans: [],
+      errors: {},
       is_search: false
     };
   },
   methods: {
-    getLoans: function getLoans() {
+    getLoans: function getLoans(params) {
       var _this = this;
 
-      axios.get('/api/loans').then(function (response) {
+      axios.get('/api/loans', {
+        params: params
+      }).then(function (response) {
         _this.loans = response.data;
-        _this.filtered_loans = response.data;
       })["catch"](function (error) {
-        console.log(error);
+        if (error.response.status == 422) {
+          _this.errors = error.response.data.errors;
+        }
       });
     },
     filterLoan: function filterLoan(data) {
-      this.filtered_loans = data;
+      this.getLoans(data);
     }
   },
   mounted: function mounted() {
@@ -51085,6 +51089,25 @@ var render = function () {
         ),
       ]),
       _vm._v(" "),
+      Object.keys(_vm.errors).length != 0
+        ? _c("div", { staticClass: "mb-3" }, [
+            _c(
+              "div",
+              { staticClass: "alert alert-danger" },
+              _vm._l(_vm.errors, function (error) {
+                return _c("li", [
+                  _vm._v(
+                    "\n                    " +
+                      _vm._s(error[0]) +
+                      "\n                "
+                  ),
+                ])
+              }),
+              0
+            ),
+          ])
+        : _vm._e(),
+      _vm._v(" "),
       _c(
         "div",
         {
@@ -51313,7 +51336,7 @@ var render = function () {
                   [
                     _c("div", { staticClass: "row" }),
                     _vm._v(" "),
-                    this.loan.id
+                    Object.keys(_vm.loan).length != 0
                       ? _c("loan-form", {
                           attrs: {
                             submit_button_name: "Edit",
@@ -51427,12 +51450,12 @@ var render = function () {
               _vm._v(" "),
               _vm.is_search
                 ? _c("search-loan", {
-                    attrs: { loans: this.loans },
+                    attrs: { errors: _vm.errors },
                     on: { clicked: _vm.filterLoan },
                   })
                 : _vm._e(),
               _vm._v(" "),
-              _c("loan-list-table", { attrs: { loans: this.filtered_loans } }),
+              _c("loan-list-table", { attrs: { loans: _vm.loans } }),
             ],
             1
           ),
