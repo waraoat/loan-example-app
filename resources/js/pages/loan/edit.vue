@@ -18,7 +18,7 @@
                         <div class="col-md-12">
                         <div class="row">
                         </div>
-                            <loan-form @submitted="editLoan" :errors=this.errors :loan=this.loan></loan-form>
+                            <loan-form @submitted="editLoan" v-if="this.loan.id" submit_button_name="Edit" :errors=this.errors :loan=this.loan></loan-form>
                         </div>
                     </div>
                 </div>

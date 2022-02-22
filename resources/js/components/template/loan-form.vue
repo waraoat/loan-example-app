@@ -79,27 +79,39 @@
                 {{ errors.year[0] }}
             </div>
         </div>
-
-        <button type="submit" class="btn btn-primary">Create</button>
+        <button type="submit" class="btn btn-primary">{{ submit_button_name }}</button>
         <a href=""><input type="button" class="btn btn-danger" value="Cancel"></a>
         </form>
     </div>
 </template>
 
 <script>
+    import moment from "moment";
     export default {
-        props: ['errors', 'loan'],
-
+        props: {
+            errors: Object, 
+            loan: {
+                type: Object,
+                default(rawProps) {
+                    return { 
+                        loan_amount: 10000, 
+                        loan_term: 1,
+                        interest_rate: 10,
+                        started_at: '2022-01-01T00:00:00.000000Z',
+                    }
+                }
+            }, 
+            submit_button_name: String,
+        },
         data() {
             return {
                 data: {
-                    loan_amount: 10000,
-                    loan_term: 1,
-                    interest_rate: 10,
-                    month: 1,
-                    year: 2022
-                },
-
+                    loan_amount: parseFloat(this.loan.loan_amount).toFixed(2),
+                    loan_term: this.loan.loan_term,
+                    interest_rate: parseFloat(this.loan.interest_rate).toFixed(2),
+                    month: moment(this.loan.started_at).format('M'),
+                    year: moment(this.loan.started_at).format('YYYY'),
+                }
             }
         },
         methods: {

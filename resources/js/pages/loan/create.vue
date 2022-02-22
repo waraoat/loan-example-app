@@ -18,7 +18,7 @@
                         <div class="col-md-12">
                         <div class="row">
                         </div>
-                            <loan-form @submitted="createLoan" :errors=this.errors></loan-form>
+                            <loan-form @submitted="createLoan" submit_button_name="Create" :errors=this.errors></loan-form>
                         </div>
                     </div>
                 </div>

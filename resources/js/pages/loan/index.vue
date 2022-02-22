@@ -12,41 +12,19 @@
                 </div>
 
                 <div class="card-body">  
-                    <div class="card-body" style="padding-left: 0rem;">
+                    <div class="card-body" style="padding-left: 0rem; padding-right: 0rem; text-align:left;">
                         <a href="/loans/create">
                             <button type="button" class="btn btn-primary">Add New Loan</button>
-                        </a>      
+                        </a>
+                        <span style="float:right;">
+                            <button type="button" class="btn btn-secondary" v-on:click="is_search = !is_search">Advanced Search</button>
+                        </span>        
                     </div>
-                    <table class="table" id="myTable">
-                        <thead class="thead-dark">
-                            <tr align="center">
-                            <th scope="col">ID</th>
-                            <th scope="col">Loan Amount</th>
-                            <th scope="col">Loan Term</th>
-                            <th scope="col">Interest Rate</th>
-                            <th scope="col">Created at</th>
-                            <th scope="col">Edit</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr align="center" v-for="(loan, index) in loans" :key="loan.id">
-                            <th scope="row">{{ index+1 }}</th>
-                            <td>{{loan.loan_amount}}</td>
-                            <td>{{loan.loan_term}} Years</td>
-                            <td>{{loan.interest_rate}} %</td>
-                            <td>{{loan.started_at}}</td>
-                            <td>
-                                <a v-bind:href="'loans/'+loan.id">
-                                    <input type="button" class="btn btn-primary" value='View'>
-                                </a>
-                                <a v-bind:href="'loans/'+loan.id+'/edit'">
-                                    <input type="button" class="btn btn-success" value='Edit'>
-                                </a>
-                                <button class="btn btn-danger" @click="deleteLoan(loan.id)">Delete</button>
-                            </td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                    <search-loan @clicked="filterLoan" v-if="is_search" :loans=this.loans></search-loan>
+                    
+                    <loan-list-table :loans=this.filtered_loans></loan-list-table>
+                    
                 </div>
             </div>
         </div>
@@ -59,23 +37,23 @@
     export default {
         data() {
             return {
+                filtered_loans: [],
                 loans: [],
+                is_search: false,
             }
         },
         methods: {
             getLoans() {
                 axios.get('/api/loans').then((response) => {
                     this.loans = response.data;
+                    this.filtered_loans = response.data;
                 }).catch((error) => {
                     console.log(error);
                 })
             },
-            deleteLoan(id) {
-                axios.delete(`/api/loans/${id}`).then((response) => {
-                    let i = this.loans.map(data => data.id).indexOf(id);
-                    this.loans.splice(i, 1)
-                })
-            }
+            filterLoan(data) {
+                this.filtered_loans = data;
+            },
         },
         mounted() {
             this.getLoans()

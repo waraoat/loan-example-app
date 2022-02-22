@@ -5,6 +5,7 @@
  */
 
 import moment from 'moment';
+import Vue from 'vue';
 
 require('./bootstrap');
 
@@ -31,6 +32,8 @@ Vue.filter('formatDate', function(value) {
     }
 });
 
+Vue.component('loan-list-table', require('./components/template/loan-list-table.vue').default);
+Vue.component('search-loan', require('./components/template/search-loan.vue').default);
 Vue.component('loan-form', require('./components/template/loan-form.vue').default);
 Vue.component('loan-index-page', require('./pages/loan/index.vue').default);
 Vue.component('loan-create-page', require('./pages/loan/create.vue').default);
