@@ -5359,9 +5359,9 @@ __webpack_require__.r(__webpack_exports__);
       type: Object,
       "default": function _default(rawProps) {
         return {
-          loan_amount: 10000,
-          loan_term: 1,
-          interest_rate: 10,
+          loan_amount: null,
+          loan_term: null,
+          interest_rate: null,
           started_at: '2022-01-01T00:00:00.000000Z'
         };
       }
@@ -5717,7 +5717,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     }
   },
-  mounted: function mounted() {
+  created: function created() {
     this.getLoan();
   }
 });
@@ -5792,11 +5792,11 @@ __webpack_require__.r(__webpack_exports__);
         }
       });
     },
-    filterLoan: function filterLoan(data) {
-      this.getLoans(data);
+    filterLoan: function filterLoan(filter) {
+      this.getLoans(filter);
     }
   },
-  mounted: function mounted() {
+  created: function created() {
     this.getLoans();
   }
 });
@@ -5914,7 +5914,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     }
   },
-  mounted: function mounted() {
+  created: function created() {
     this.getLoan();
   }
 });
@@ -50445,11 +50445,10 @@ var render = function () {
               ],
               staticClass: "form-control",
               attrs: {
-                type: "text",
+                type: "number",
                 id: "loan_amount",
                 placeholder: "Number",
                 name: "loan_amount",
-                value: "100000",
                 required: "",
               },
               domProps: { value: _vm.data.loan_amount },
@@ -50496,7 +50495,6 @@ var render = function () {
                 id: "loan_term",
                 placeholder: "Number",
                 name: "loan_term",
-                value: "1",
                 required: "",
               },
               domProps: { value: _vm.data.loan_term },
@@ -50543,7 +50541,6 @@ var render = function () {
                 id: "interest_rate",
                 placeholder: "Number",
                 name: "interest_rate",
-                value: "10",
                 required: "",
               },
               domProps: { value: _vm.data.interest_rate },
@@ -50741,11 +50738,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "input-group-append" }, [
-      _c(
-        "span",
-        { staticClass: "input-group-text", attrs: { id: "basic-addon2" } },
-        [_vm._v("฿")]
-      ),
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("฿")]),
     ])
   },
   function () {
@@ -50753,11 +50746,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "input-group-append" }, [
-      _c(
-        "span",
-        { staticClass: "input-group-text", attrs: { id: "basic-addon2" } },
-        [_vm._v("Years")]
-      ),
+      _c("span", { staticClass: "input-group-text" }, [_vm._v("Years")]),
     ])
   },
   function () {

@@ -20,27 +20,27 @@ class LoanRepository
             ->get();
     }
 
-    public function getByFilter($filter)
+    public function getByFilter(object $filter)
     {
         $query = $this->loan;
 
-        if (property_exists((object) $filter, 'min_loan_amount')) {
-            $query = $query->where('loan_amount', '>=', $filter['min_loan_amount']);
+        if (isset($filter->min_loan_amount)) {
+            $query = $query->where('loan_amount', '>=', $filter->min_loan_amount);
         }
-        if (property_exists((object) $filter, 'max_loan_amount')) {
-            $query = $query->where('loan_amount', '<=', $filter['max_loan_amount']);
+        if (isset($filter->max_loan_amount)) {
+            $query = $query->where('loan_amount', '<=', $filter->max_loan_amount);
         }
-        if (property_exists((object) $filter, 'min_loan_term')) {
-            $query = $query->where('loan_term', '>=', $filter['min_loan_term']);
+        if (isset($filter->min_loan_term)) {
+            $query = $query->where('loan_term', '>=', $filter->min_loan_term);
         }
-        if (property_exists((object) $filter, 'max_loan_term')) {
-            $query =  $query->where('loan_term', '<=', $filter['max_loan_term']);
+        if (isset($filter->max_loan_term)) {
+            $query =  $query->where('loan_term', '<=', $filter->max_loan_term);
         }
-        if (property_exists((object) $filter, 'min_interest_rate')) {
-            $query = $query->where('interest_rate', '>=', $filter['min_interest_rate']);
+        if (isset($filter->min_interest_rate)) {
+            $query = $query->where('interest_rate', '>=', $filter->min_interest_rate);
         }
-        if (property_exists((object) $filter, 'max_interest_rate')) {
-            $query = $query->where('interest_rate', '<=', $filter['max_interest_rate']);
+        if (isset($filter->max_interest_rate)) {
+            $query = $query->where('interest_rate', '<=', $filter->max_interest_rate);
         }
         
         return $query->get();

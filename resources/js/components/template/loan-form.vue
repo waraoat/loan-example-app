@@ -4,9 +4,9 @@
             <div class="form-group">
                 <label>Loan Amount</label>
                 <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="loan_amount" placeholder="Number" name="loan_amount" v-model="data.loan_amount" value="100000" required>
+                    <input type="number" class="form-control" id="loan_amount" placeholder="Number" name="loan_amount" v-model="data.loan_amount" required>
                     <div class="input-group-append">
-                        <span class="input-group-text" id="basic-addon2">฿</span>
+                        <span class="input-group-text">฿</span>
                     </div>
                 </div>
                 <div class="alert alert-danger" v-if="errors && errors.loan_amount">
@@ -17,9 +17,9 @@
             <div class="form-group">
                 <label>Loan Term</label>
                 <div class="input-group mb-3">
-                    <input type="number" class="form-control" id="loan_term" placeholder="Number" name="loan_term" v-model="data.loan_term" value="1" required>
+                    <input type="number" class="form-control" id="loan_term" placeholder="Number" name="loan_term" v-model="data.loan_term" required>
                     <div class="input-group-append">
-                        <span class="input-group-text" id="basic-addon2">Years</span>
+                        <span class="input-group-text">Years</span>
                     </div>
                 </div>
                 <div class="alert alert-danger" v-if="errors && errors.loan_term">
@@ -30,7 +30,7 @@
             <div class="form-group">
                 <label>Intereset Rate</label>
                 <div class="input-group mb-3">
-                    <input type="number" class="form-control" id="interest_rate" placeholder="Number" name="interest_rate" v-model="data.interest_rate" value="10" required>
+                    <input type="number" class="form-control" id="interest_rate" placeholder="Number" name="interest_rate" v-model="data.interest_rate" required>
                     <div class="input-group-append">
                         <span class="input-group-text" id="basic-addon2">%</span>
                     </div>
@@ -94,9 +94,9 @@
                 type: Object,
                 default(rawProps) {
                     return { 
-                        loan_amount: 10000, 
-                        loan_term: 1,
-                        interest_rate: 10,
+                        loan_amount: null, 
+                        loan_term: null,
+                        interest_rate: null,
                         started_at: '2022-01-01T00:00:00.000000Z',
                     }
                 }

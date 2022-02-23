@@ -52,11 +52,11 @@
                     }
                 })
             },
-            filterLoan(data) {
-                this.getLoans(data)
+            filterLoan(filter) {
+                this.getLoans(filter)
             },
         },
-        mounted() {
+        created() {
             this.getLoans()
         }
     }
