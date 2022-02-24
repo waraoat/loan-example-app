@@ -35,9 +35,9 @@ class LoanService
         return $loan;
     }
 
-    public function getAll()
+    public function getByFilter($filter)
     {
-        return $this->loanRepository->getAll();
+        return $this->loanRepository->getByFilter((object) $filter);
     }
 
     public function getById($id)

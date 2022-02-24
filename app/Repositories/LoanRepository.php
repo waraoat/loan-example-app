@@ -20,9 +20,36 @@ class LoanRepository
             ->get();
     }
 
+    public function getByFilter(object $filter)
+    {
+        $query = $this->loan;
+
+        if (isset($filter->min_loan_amount)) {
+            $query = $query->where('loan_amount', '>=', $filter->min_loan_amount);
+        }
+        if (isset($filter->max_loan_amount)) {
+            $query = $query->where('loan_amount', '<=', $filter->max_loan_amount);
+        }
+        if (isset($filter->min_loan_term)) {
+            $query = $query->where('loan_term', '>=', $filter->min_loan_term);
+        }
+        if (isset($filter->max_loan_term)) {
+            $query =  $query->where('loan_term', '<=', $filter->max_loan_term);
+        }
+        if (isset($filter->min_interest_rate)) {
+            $query = $query->where('interest_rate', '>=', $filter->min_interest_rate);
+        }
+        if (isset($filter->max_interest_rate)) {
+            $query = $query->where('interest_rate', '<=', $filter->max_interest_rate);
+        }
+        
+        return $query->get();
+    }
+
     public function getById($id)
     {
         return $this->loan
+            ->with('repayment_schedules')
             ->findOrFail($id);
     }
 

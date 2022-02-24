@@ -41,7 +41,7 @@ class LoanServiceTest extends TestCase
         $this->assertEquals('2021-01-01 00:00:00', $deleated_loan->started_at);
     }
 
-    public function test_get_all()
+    public function test_get_by_filter()
     {
         $loan_1 = Loan::factory()->make([
             'loan_amount' => 10000,
@@ -56,9 +56,9 @@ class LoanServiceTest extends TestCase
             'started_at' => '2021-02-01 00:00:00',
         ]);
 
-        $this->loanRepository->shouldReceive('getAll')->once()->andReturn([$loan_1, $loan_2]);
+        $this->loanRepository->shouldReceive('getByFilter')->once()->andReturn([$loan_1, $loan_2]);
 
-        $loans = $this->loanService->getAll();
+        $loans = $this->loanService->getByFilter([]);
 
         $this->assertEquals(10000, $loans[0]->loan_amount);
         $this->assertEquals(1, $loans[0]->loan_term);

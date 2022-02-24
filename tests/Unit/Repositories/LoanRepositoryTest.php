@@ -124,4 +124,107 @@ class LoanRepositoryTest extends TestCase
             'started_at' => $deleted_loan->crerated_at,
         ]);
     }
+
+    public function test_get_by_filter()
+    {
+        $loan_1_id = Loan::factory()->create([
+            'loan_amount' => 10000,
+            'loan_term' => 1,
+            'interest_rate' => 10
+        ])->id;
+        $loan_2_id = Loan::factory()->create([
+            'loan_amount' => 20000,
+            'loan_term' => 20,
+            'interest_rate' => 20
+        ])->id;
+        $loan_3_id = Loan::factory()->create([
+            'loan_amount' => 30000,
+            'loan_term' => 15,
+            'interest_rate' => 30
+        ])->id;
+        $loan_4_id = Loan::factory()->create([
+            'loan_amount' => 40000,
+            'loan_term' => 25,
+            'interest_rate' => 20
+        ])->id;
+        $loan_5_id = Loan::factory()->create([
+            'loan_amount' => 20000,
+            'loan_term' => 30,
+            'interest_rate' => 36
+        ])->id;
+
+        $tests = 
+        [
+            [
+                'message' => 'All loan without filter',
+                'input' => [],
+                'want' => [$loan_1_id, $loan_2_id, $loan_3_id, $loan_4_id, $loan_5_id]
+            ],
+            [
+                'message' => 'All loan with filter',
+                'input' => [
+                    'min_loan_amount' => 1000,
+                    'max_loan_amount' => 100000000,
+                    'min_loan_term' => 1,
+                    'max_loan_term' => 50,
+                    'min_interest_rate' => 1,
+                    'max_interest_rate' => 36
+                ],
+                'want' => [$loan_1_id, $loan_2_id, $loan_3_id, $loan_4_id, $loan_5_id]
+            ],
+            [
+                'message' => 'Filter with loan amount',
+                'input' => [
+                    'min_loan_amount' => 20000,
+                    'max_loan_amount' => 30000    
+                ],
+                'want' => [$loan_2_id, $loan_3_id, $loan_5_id]
+            ],
+            [
+                'message' => 'Filter with loan data invalid',
+                'input' => [
+                    'min_loan_amount' => 40000,
+                    'max_loan_amount' => 20000    
+                ],
+                'want' => []
+            ],
+            [
+                'message' => 'Filter with loan term',
+                'input' => [
+                    'min_loan_term' => 1,
+                    'max_loan_term' => 20    
+                ],
+                'want' => [$loan_1_id, $loan_2_id, $loan_3_id]
+            ],
+            [
+                'message' => 'Filter with loan term invalid',
+                'input' => [
+                    'min_loan_term' => 10,
+                    'max_loan_term' => 5    
+                ],
+                'want' => []
+            ],
+            [
+                'message' => 'Filter with interest rate',
+                'input' => [
+                    'min_interest_rate' => 20,
+                    'max_interest_rate' => 30    
+                ],
+                'want' => [$loan_2_id, $loan_3_id, $loan_4_id]
+            ],
+            [
+                'message' => 'Filter with interest rate invalid',
+                'input' => [
+                    'min_interest_rate' => 20,
+                    'max_interest_rate' => 10    
+                ],
+                'want' => []
+            ],
+        ];
+
+        foreach ($tests as $test) {
+            $loans = $this->loanRepository->getByFilter((object) $test['input']);
+            $this->assertEqualsCanonicalizing($test['want'], $loans->pluck('id')->toArray(), $test['message']);
+        }
+    }
 }
